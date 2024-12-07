@@ -2,6 +2,7 @@ package aoc;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -9,12 +10,10 @@ import org.junit.jupiter.api.Test;
  */
 public class Day01Test {
 
-    /**
-     * Rigorous Test :-)
-     */
     @Test
     @DisplayName("")
     public void shouldAnswerWithTrue() {
-        assertTrue(true);
+        Day01 day01=new Day01();
+        day01.readInput();
     }
 }

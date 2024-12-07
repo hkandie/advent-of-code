@@ -1,10 +1,17 @@
 package aoc;
 
+import java.io.File;
+
 /**
  * Hello world!
  */
 public class Day01 {
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
+    String sampleName = "samples/01.txt";
+
+    void readInput(){
+
+        File file= new File(sampleName);
+        file.createNewFile();
+     
     }
 }
