@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 /**
  * Hello world!
  */
 public class Day02 {
-    String sampleName = "input";
+    String sampleName = "input/01-2-input.txt";
 
     List<String> readInput(String path) {
 
@@ -34,62 +32,85 @@ public class Day02 {
     }
 
     void partOne() {
-        List<String> data = readInput("input/01-2-input.txt");
+        List<String> data = readInput(sampleName);
 
         AtomicInteger totalDistance = new AtomicInteger(0);
-        data.forEach(d -> {
-            List<String> ab = Arrays.asList(d.split(" ")).stream().filter((i -> i != "")).toList();
-            boolean toomuch = true;
-            int prev = 0;
-            for (int i = 0; i < ab.size() - 1; i++) {
-                int difference = Math.abs(Integer.parseInt(ab.get(i + 1)) - Integer.parseInt(ab.get(i)));
-                if (difference > 2) {
-                    toomuch = false;
-                    break;
-                }
-                if (prev > 0 && difference < 0) {
-                    toomuch = false;
-                    break;
-                }
-                if (prev < 0 && difference > 0) {
-                    toomuch = false;
-                    break;
-                }
-                prev = difference;
+        for (int i = 0; i < data.size(); i++) {
+            int[] ab = Arrays.stream(data.get(i).split(" "))
+                    .filter(j -> !j.isEmpty())
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
 
-            }
-            if (toomuch) {
-                totalDistance.incrementAndGet();
+            boolean areAllDecreasing = IntStream.range(0, ab.length - 1).allMatch(j -> ab[j] <= ab[j + 1]);
+            boolean areAllIncreasing = IntStream.range(0, ab.length - 1).allMatch(j -> ab[j] >= ab[j + 1]);
+            boolean isAdjuscent = IntStream.range(0, ab.length - 1)
+                    .allMatch(j -> {
+                        int difference = Math.abs(ab[j] - ab[j + 1]);
+                        return difference >= 1 && difference <= 3;
+                    });
+
+            if (isAdjuscent && (areAllDecreasing || areAllIncreasing)) {
+                totalDistance.getAndIncrement();
             }
 
-        });
-        System.out.println(totalDistance);
+        }
+        System.out.printf("Total: [%d]\n", totalDistance.get());
+    }
 
+    int[] removeItem(int[] arr, int index) {
+
+        int[] anotherArray = new int[arr.length - 1];
+        for (int i = 0, k = 0; i <= arr.length - 1; i++) {
+            if (i == index) {
+                continue;
+            }
+            anotherArray[k++] = arr[i];
+        }
+        return anotherArray;
+    }
+
+    boolean isSafe(int[] ab) {
+        boolean isAllDecreasing = IntStream.range(0, ab.length - 1).allMatch(j -> ab[j] <= ab[j + 1]);
+        boolean areAllIncreasing = IntStream.range(0, ab.length - 1).allMatch(j -> ab[j] >= ab[j + 1]);
+        boolean isAllAdjuscent = IntStream.range(0, ab.length - 1)
+                .allMatch(j -> {
+                    int difference = Math.abs(ab[j] - ab[j + 1]);
+                    return difference >= 1 && difference <= 3;
+                });
+        return isAllAdjuscent && (isAllDecreasing || areAllIncreasing);
     }
 
     void partTwo() {
 
-        List<String> data = readInput("input/01-1-input.txt");
+        List<String> data = readInput(sampleName);
 
-        List<Integer> a = new ArrayList<>();
-        List<Integer> b = new ArrayList<>();
-        data.forEach(d -> {
-            List<String> ab = Arrays.asList(d.split(" ")).stream().filter((i -> i != "")).toList();
+        AtomicInteger safeCounter = new AtomicInteger(0);
+        for (int i = 0; i < data.size(); i++) {
+            int[] ab = Arrays.stream(data.get(i).split(" "))
+                    .filter(j -> !j.isEmpty())
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+            boolean valid = isSafe(ab);
 
-            a.add(Integer.parseInt(ab.get(0)));
-            b.add(Integer.parseInt(ab.get(1)));
-        });
-
-        int totalDistance = 0;
-        for (int j = 0; j < a.size(); j++) {
-            final int index = j;
-            List<Integer> c = b.stream().filter(num -> num.equals(a.get(index))).toList();
-            if (c.size() > 0) {
-                System.out.printf("[%d] found %d\n", j, a.get(index), c.size(), c.size() * a.get(index));
+            if (valid) {
+                safeCounter.getAndIncrement();
             }
-            totalDistance += c.size() * a.get(index);
+            if (!valid) {
+                for (int k = 0; k < ab.length; k++) {
+                    int[] temp = removeItem(ab, k);
+
+                    boolean isValidWithDampaner = isSafe(temp);
+
+                    if (isValidWithDampaner) {
+                        safeCounter.getAndIncrement();
+                        break;
+                    }
+
+                }
+            }
+
         }
-        System.out.println(totalDistance);
+        System.out.printf("Total: [%d]\n", safeCounter.get());
     }
 
 }
