@@ -11,9 +11,15 @@ import org.junit.jupiter.api.Test;
 public class Day01Test {
 
     @Test
-    @DisplayName("")
-    public void shouldAnswerWithTrue() {
-        Day01 day01=new Day01();
-        day01.readInput();
+    public void shouldAnswerPartOne() {
+        Day01 day01 = new Day01();
+        day01.partOne();
     }
+
+    @Test
+    public void shouldAnswerPartTwo() {
+        Day01 day01 = new Day01();
+        day01.partTwo();
+    }
+
 }

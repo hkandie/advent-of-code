@@ -14,6 +14,5 @@ public class MyInitTest {
     @DisplayName("")
     public void shouldAnswerWithTrue() {
         Day01 day01=new Day01();
-        day01.readInput();
     }
 }
